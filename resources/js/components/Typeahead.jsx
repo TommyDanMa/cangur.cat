@@ -98,7 +98,6 @@ export default function Typeahead({
   return (
     <div className={containerClass} ref={wrapRef}>
       <div
-        className="relative"
         onClick={() => {
           setOpen(true);
           if (inputRef.current) inputRef.current.focus();
@@ -109,12 +108,6 @@ export default function Typeahead({
           }
         }}
       >
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500">
-          <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.085l3.71-3.855a.75.75 0 111.08 1.04l-4.24 4.4a.75.75 0 01-1.08 0l-4.24-4.4a.75.75 0 01.02-1.06z" clipRule="evenodd" />
-          </svg>
-        </div>
-
         <input
           ref={inputRef}
           type="text"
@@ -123,13 +116,19 @@ export default function Typeahead({
           onFocus={handleFocus}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="block w-full rounded-md border border-gray-300 bg-white pl-3 pr-8 py-2 text-sm
+          className="block w-full rounded-md border border-gray-300 bg-white pl-3 pr-10 py-2 text-sm
                      focus:outline-none focus:border-indigo-500 placeholder-gray-400"
           role="combobox"
           aria-autocomplete="list"
           aria-expanded={open}
           autoComplete="off"
         />
+
+        <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-500">
+          <svg className="block" width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.085l3.71-3.855a.75.75 0 111.08 1.04l-4.24 4.4a.75.75 0 01-1.08 0l-4.24-4.4a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+          </svg>
+        </div>
       </div>
 
       {open && (
