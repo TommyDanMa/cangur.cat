@@ -98,6 +98,19 @@
                         </div>
                     </div>
 
+                    <!-- Bloc (opcional) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Bloc (opcional)</label>
+                        <select name="block_id" class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="">– Cap –</option>
+                            @foreach($blocks ?? [] as $b)
+                                <option value="{{ $b->id }}" @selected(old('block_id', request('block_id'))==$b->id)>{{ $b->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('block_id')<p class="text-sm text-red-600">{{ $message }}</p>@enderror
+                        <p class="mt-1 text-xs text-gray-500">Pots arxivar el problema dins un bloc ara o més tard des del gestor de blocs.</p>
+                    </div>
+
                     <!-- Enunciado -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Enunciat</label>

@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
+/**
+ * User registration controller.
+ */
 class RegisteredUserController extends Controller
 {
     /**
@@ -25,7 +28,12 @@ class RegisteredUserController extends Controller
     /**
      * Handle an incoming registration request.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * Validation:
+     * - Uses strong email validation and a custom 'allowed_email' rule (see Validator extensions) and uniqueness.
+     * Eloquent:
+     * - User::create persists the new user with a hashed password.
+     * Events/Auth:
+     * - Fires Registered event (e.g., to send verification) then logs in the user.
      */
     public function store(Request $request): RedirectResponse
     {

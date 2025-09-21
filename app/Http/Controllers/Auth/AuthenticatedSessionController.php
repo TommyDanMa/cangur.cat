@@ -9,6 +9,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
+/**
+ * Session/auth controller for login/logout.
+ *
+ * Differences vs Flask:
+ * - LoginRequest encapsulates validation and authentication logic; in Flask you'd typically validate form data
+ *   and call login_user() from Flask-Login manually.
+ * - Session regeneration and CSRF token management are handled by Laravel helpers.
+ */
 class AuthenticatedSessionController extends Controller
 {
     /**
@@ -21,6 +29,9 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Handle an incoming authentication request.
+     *
+     * - $request->authenticate() will validate credentials and log in the user using the configured guard.
+     * - On success, regenerate the session ID to prevent fixation and redirect to intended URL.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -33,6 +44,8 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Destroy an authenticated session.
+     *
+     * - Logs out via guard, invalidates session, regenerates CSRF token (similar to Flask-Login logout_user + session.clear).
      */
     public function destroy(Request $request): RedirectResponse
     {

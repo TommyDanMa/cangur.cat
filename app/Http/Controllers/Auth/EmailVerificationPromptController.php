@@ -7,6 +7,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
+/**
+ * Single-action controller that either redirects verified users or shows a verification prompt.
+ */
 class EmailVerificationPromptController extends Controller
 {
     /**

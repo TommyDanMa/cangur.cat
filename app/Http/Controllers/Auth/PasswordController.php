@@ -8,10 +8,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
+/**
+ * Handle password change for an authenticated user.
+ */
 class PasswordController extends Controller
 {
     /**
      * Update the user's password.
+     *
+     * - validateWithBag() adds errors to a named bag for the view.
+     * - 'current_password' rule verifies the existing password against the logged-in user.
+     * - Hash::make() is used before storing (never store plain text).
      */
     public function update(Request $request): RedirectResponse
     {
