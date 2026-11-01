@@ -1,9 +1,9 @@
 <x-layouts.app>
-    <x-slot name="header">
+    <x-slot:header>
         <h2 class="text-xl font-semibold leading-tight text-gray-800">
             {{ __('Editar resposta') }}
         </h2>
-    </x-slot>
+    </x-slot:header>
 
     <div class="py-8">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
@@ -71,10 +71,12 @@
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                        <x-button>
                             {{ __('Actualitza') }}
-                        </button>
-                        <a href="{{ route('answers.show', $answer) }}" class="text-sm text-gray-600 hover:text-gray-900">{{ __('Cancel·lar') }}</a>
+                        </x-button>
+                        <x-button variant="secondary" href="{{ route('answers.show', $answer) }}">
+                            {{ __('Cancel·lar') }}
+                        </x-button>
                     </div>
                 </form>
             </div>

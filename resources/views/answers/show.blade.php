@@ -1,9 +1,9 @@
 <x-layouts.app>
-    <x-slot name="header">
+    <x-slot:header>
         <h2 class="text-xl font-semibold leading-tight text-gray-800">
             {{ __('Resposta') }}
         </h2>
-    </x-slot>
+    </x-slot:header>
 
     <div class="py-8">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
@@ -46,13 +46,13 @@
                 @auth
                     <div class="pt-4 flex items-center gap-3">
                         @can('update', $answer)
-                            <a href="{{ route('answers.edit', $answer) }}" class="inline-flex items-center px-3 py-1.5 bg-indigo-600 text-white rounded hover:bg-indigo-700">{{ __('Edita') }}</a>
+                            <x-button href="{{ route('answers.edit', $answer) }}">{{ __('Edita') }}</x-button>
                         @endcan
                         @can('delete', $answer)
                             <form method="POST" action="{{ route('answers.destroy', $answer) }}" onsubmit="return confirm('Segur que vols esborrar la resposta?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white rounded hover:bg-red-700">{{ __('Elimina') }}</button>
+                                <x-button variant="danger">{{ __('Elimina') }}</x-button>
                             </form>
                         @endcan
                     </div>

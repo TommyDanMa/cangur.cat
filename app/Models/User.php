@@ -9,7 +9,6 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -46,16 +45,5 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'role' => 'string',
         ];
-    }
-
-    // Convenience helpers
-    public function isTeacher(): bool
-    {
-        return $this->role === 'teacher';
-    }
-
-    public function isStudent(): bool
-    {
-        return $this->role === 'student';
     }
 }

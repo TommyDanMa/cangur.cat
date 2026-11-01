@@ -19,7 +19,7 @@ class AnswerPolicy
         $question = $answer->question;
         $hasAnswered = $question->answers()->where('user_id', $user->id)->exists();
 
-        return $hasAnswered || ($user->role === 'teacher');
+        return $hasAnswered || $user->can('teacher');
     }
 
     /**
@@ -27,10 +27,8 @@ class AnswerPolicy
      */
     public function update(User $user, Answer $answer): bool
     {
-        if ($user->role === 'teacher') return true; // professors can edit any answer
-        if ($answer->user_id !== $user->id) return false;
-        // owners can edit within 15 minutes of submission
-        return now()->diffInMinutes($answer->created_at) <= 15;
+        if ($user->can('teacher')) return true; // professors can edit any answer
+        return $answer->user_id === $user->id;
     }
 
     /**
@@ -38,9 +36,7 @@ class AnswerPolicy
      */
     public function delete(User $user, Answer $answer): bool
     {
-        if ($user->role === 'teacher') return true; // professors can delete any answer
-        if ($answer->user_id !== $user->id) return false;
-        // owners can delete within 15 minutes of submission
-        return now()->diffInMinutes($answer->created_at) <= 15;
+        if ($user->can('teacher')) return true; // professors can delete any answer
+        return $answer->user_id === $user->id;
     }
 }

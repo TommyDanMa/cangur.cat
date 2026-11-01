@@ -9,9 +9,9 @@ class Question extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title','statement','year','level','image_path','phase','session','created_by','block_id','position'];
+    protected $fillable = ['title','statement','year','level','image_path','phase','session','created_by'];
 
-    public function author()
+    public function user()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
@@ -19,10 +19,5 @@ class Question extends Model
     public function answers()
     {
         return $this->hasMany(Answer::class);
-    }
-
-    public function block()
-    {
-        return $this->belongsTo(Block::class);
     }
 }

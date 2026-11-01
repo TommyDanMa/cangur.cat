@@ -1,9 +1,9 @@
 <x-layouts.app>
-    <x-slot name="header">
+    <x-slot:header>
         <h2 class="text-xl font-semibold leading-tight text-gray-800">
             {{ __('Editar problema') }}
         </h2>
-    </x-slot>
+    </x-slot:header>
 
     <div class="py-8">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
@@ -74,18 +74,6 @@
                         </div>
                     </div>
 
-                    <!-- Bloc (opcional) -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Bloc (opcional)</label>
-                        <select name="block_id" class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">– Cap –</option>
-                            @foreach(($blocks ?? []) as $b)
-                                <option value="{{ $b->id }}" @selected(old('block_id', $question->block_id)==$b->id)>{{ $b->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('block_id')<p class="text-sm text-red-600">{{ $message }}</p>@enderror
-                    </div>
-
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Enunciat</label>
                         <textarea name="statement" rows="6" class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" required>{{ old('statement', $question->statement) }}</textarea>
@@ -109,8 +97,12 @@
                 </div>
 
                 <div class="bg-gray-50 px-6 py-4 flex items-center justify-end gap-3">
-                    <a href="{{ route('questions.show', $question) }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Cancel·la') }}</a>
-                    <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">{{ __('Desa') }}</button>
+                    <x-button href="{{ route('questions.show', $question) }}" variant="secondary">
+                        {{ __('Cancel·la') }}
+                    </x-button>
+                    <x-button>
+                        {{ __('Desa') }}
+                    </x-button>
                 </div>
             </form>
         </div>

@@ -19,14 +19,12 @@ class QuestionFactory extends Factory
             'title' => $this->faker->sentence(3),
             'statement' => $this->faker->paragraph(),
             'year' => $this->faker->numberBetween(2010, 2030),
-            'level' => $this->faker->randomElement(['A','B','C','D','E']),
+            'level' => $this->faker->randomElement(['Cadet(1ESO-2ESO)','Junior(3ESO-4ESO)']),
             'phase' => $this->faker->randomElement(['local','semifinal','final']),
             // Use 'tarda' to avoid enum accent mismatch in tests
             'session' => 'tarda',
             'image_path' => null,
             'created_by' => User::factory(),
-            'block_id' => null,
-            'position' => 0,
         ];
     }
 }

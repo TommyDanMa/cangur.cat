@@ -22,3 +22,26 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Recovery exclusions
+/vendor/
+/node_modules/
+.env
+.env.*
+!.env.example
+/auth.json
+/public/build/
+/public/hot
+/public/storage
+/storage/**
+!/storage/**/
+!/storage/**/.gitignore
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+*.sql
+*.sql.gz
+*.sqlite*
+*.db
+*.pem
+*.key
+.DS_Store

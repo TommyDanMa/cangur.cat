@@ -1,4 +1,4 @@
-<x-guest-layout>
+ <x-layouts.guest>
     <div class="mb-4 text-sm text-gray-600">
         {{ __('Aquesta és una àrea segura de l\'aplicació. Si us plau, confirmeu la vostra contrasenya abans de continuar.') }}
     </div>
@@ -19,9 +19,9 @@
         </div>
 
         <div class="flex justify-end mt-4">
-            <x-primary-button>
+            <x-button>
                 {{ __('Confirmar') }}
-            </x-primary-button>
+            </x-button>
         </div>
     </form>
-</x-guest-layout>
+</x-layouts.guest>

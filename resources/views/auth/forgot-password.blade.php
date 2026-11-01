@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-layouts.guest>
     <div class="mb-4 text-sm text-gray-600">
         {{ __('Has oblidat la contrasenya? Cap problema. Només cal que ens facis saber la teva adreça electrònica i t\'enviarem un enllaç per restablir la contrasenya que et permetrà triar-ne una de nova.') }}
     </div>
@@ -17,9 +17,9 @@
         </div>
 
         <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
+            <x-button>
                 {{ __('Enllaç de restabliment de contrasenya del correu electrònic') }}
-            </x-primary-button>
+            </x-button>
         </div>
     </form>
-</x-guest-layout>
+</x-layouts.guest>

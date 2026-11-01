@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Question;
 use App\Models\Block;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class QuestionController extends Controller
 {
@@ -14,70 +12,42 @@ class QuestionController extends Controller
     public function index()
     {
         $q = Question::query();
-        if (request('year'))  $q->where('year', (int) request('year'));
-        if (request('level')) $q->where('level', request('level'));
-        if (request('phase')) $q->where('phase', request('phase'));
-        if (request('session')) $q->where('session', request('session'));
-
-        // Only show questions that are not inside any block on the index
-        $q->whereNull('block_id');
-
-        // Load blocks tree for index page (like Drive sidebar). Read-only for students, editable for teachers.
-        $blocks = collect();
-        if (Schema::hasTable('blocks') && Schema::hasColumn('blocks','parent_id') && Schema::hasColumn('blocks','position')) {
-            $blocks = Block::withCount('questions')
-                ->with(['children' => function ($q) {
-                    $q->withCount('questions')->with(['children' => function ($qq) {
-                        $qq->withCount('questions'); // deeper levels get count too
-                    }]);
-                }])
-                ->whereNull('parent_id')
-                ->orderBy('position')
-                ->get();
-        }
+        if (request('year'))  $q->where('year', 'LIKE', (int) request('year') . '%');
+        if (request('level')) $q->where('level', 'LIKE', '%' . request('level') . '%');
+        if (request('phase')) $q->where('phase', 'LIKE', '%' . request('phase') . '%');
+        if (request('session')) $q->where('session', 'LIKE', '%' . request('session') . '%');
 
         return view('questions.index', [
-            'questions' => $q->orderBy('position')->orderBy('created_at')->paginate(10),
-            'blocks' => $blocks,
+            'questions' => $q->orderBy('created_at')->simplePaginate(10),
         ]);
     }
 
     /** Show the form to create a new question. */
     public function create()
     {
-        abort_unless(auth()->user()->role === 'teacher', 403);
-        $blocks = Block::orderBy('name')->get(['id','name']);
-        return view('questions.create', compact('blocks'));
+        return view('questions.create');
     }
 
     /** Store a newly created Question. */
     public function store(Request $request)
     {
-        abort_unless(auth()->user()->role === 'teacher', 403);
-
-        $data = $request->validate([
+        $validated = $request->validate([
             'title'     => 'required|string|max:255',
             'statement' => 'required|string',
             'year'      => 'required|integer',
             'level'     => 'required|string|max:20',
             'phase'     => 'required|in:local,semifinal,final',
             'session'   => 'nullable|in:mati,tarda|required_if:phase,local',
-            'block_id'  => 'nullable|exists:blocks,id',
             'image'     => 'nullable|image|mimes:jpg,jpeg,png,gif,svg|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
-            $data['image_path'] = $request->file('image')->store('questions', 'public');
+            $validated['image_path'] = $request->file('image')->store('questions', 'public');
         }
 
-        $data['created_by'] = auth()->id();
-        // Assign position at end within selected block (or within unassigned group if none)
-        if (!empty($data['block_id'])) {
-            $data['position'] = (int) (Question::where('block_id', $data['block_id'])->max('position') ?? 0) + 1;
-        } else {
-            $data['position'] = (int) (Question::whereNull('block_id')->max('position') ?? 0) + 1;
-        }
-        Question::create($data);
+        $validated['created_by'] = auth()->id();
+
+        Question::create($validated);
 
         return redirect()->route('questions.index')->with('ok', 'Problema creat');
     }
@@ -105,41 +75,27 @@ class QuestionController extends Controller
     /** Show edit form */
     public function edit(Question $question)
     {
-        $this->authorize('update', $question);
-        $blocks = Block::orderBy('name')->get(['id','name']);
-        return view('questions.edit', compact('question','blocks'));
+        return view('questions.edit', compact('question'));
     }
 
     /** Update a question */
     public function update(Request $request, Question $question)
     {
-        $this->authorize('update', $question);
-
-        $data = $request->validate([
+        $validated = $request->validate([
             'title'     => 'required|string|max:255',
             'statement' => 'required|string',
             'year'      => 'required|integer',
             'level'     => 'required|string|max:20',
             'phase'     => 'required|in:local,semifinal,final',
             'session'   => 'nullable|in:mati,tarda|required_if:phase,local',
-            'block_id'  => 'nullable|exists:blocks,id',
             'image'     => 'nullable|image|mimes:jpg,jpeg,png,gif,svg|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
-            $data['image_path'] = $request->file('image')->store('questions', 'public');
+            $validated['image_path'] = $request->file('image')->store('questions', 'public');
         }
 
-        // If block changed, move to end of target block (or 0 if unset)
-        $oldBlock = $question->block_id;
-        $newBlock = $data['block_id'] ?? null;
-        if ($oldBlock !== $newBlock) {
-            $data['position'] = $newBlock !== null
-                ? ((int) (Question::where('block_id', $newBlock)->max('position') ?? 0) + 1)
-                : ((int) (Question::whereNull('block_id')->max('position') ?? 0) + 1);
-        }
-
-        $question->update($data);
+        $question->update($validated);
 
         return redirect()->route('questions.show', $question)->with('ok', 'Problema actualitzat');
     }
@@ -147,34 +103,37 @@ class QuestionController extends Controller
     /** Delete a question */
     public function destroy(Question $question)
     {
-        $this->authorize('delete', $question);
         $question->delete();
         return redirect()->route('questions.index')->with('ok', 'Problema eliminat');
     }
 
-    /** Reorder & reassign Questions (teacher only)
-     * Expects JSON: { items: [{ id:number, block_id:number|null, position:number }, ...] }
+    /**
+     * Get suggestions for question fields (year, level, phase, session).
      */
-    public function reorder(Request $request)
+    public function suggest(Request $request)
     {
-        abort_unless(auth()->check() && auth()->user()->role === 'teacher', 403);
+        $field = $request->query('field');
+        $q = (string) $request->query('q', '');
 
-        $items = $request->validate([
-            'items' => 'required|array',
-            'items.*.id' => 'required|integer|exists:questions,id',
-            'items.*.block_id' => 'nullable|integer|exists:blocks,id',
-            'items.*.position' => 'required|integer|min:0',
-        ])['items'];
+        abort_unless(in_array($field, ['year', 'level', 'phase', 'session'], true), 400);
 
-        DB::transaction(function () use ($items) {
-            foreach ($items as $row) {
-                Question::where('id', $row['id'])->update([
-                    'block_id' => $row['block_id'] ?? null,
-                    'position' => $row['position'],
-                ]);
+        $query = Question::query()
+            ->select($field)
+            ->whereNotNull($field)
+            ->distinct();
+
+        if ($q !== '') {
+            if ($field === 'year') {
+                $query->where($field, 'like', "{$q}%");
+            } else {
+                $query->where($field, 'like', "%{$q}%");
             }
-        });
+        }
 
-        return response()->json(['ok' => true]);
+        $values = $query->orderBy($field)->limit(20)->pluck($field);
+
+        return response()->json(
+            $values->map(fn($v) => ['id' => (string) $v, 'label' => (string) $v])->toArray()
+        );
     }
 }

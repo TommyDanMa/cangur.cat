@@ -49,10 +49,3 @@ if (document.readyState === 'loading') {
 } else {
     mountTypeaheads();
 }
-
-// Re-montaje en HMR / actualizaciones de Vite (por si aplica)
-if (import.meta && import.meta.hot) {
-    import.meta.hot.accept(() => {
-        mountTypeaheads();
-    });
-}

@@ -13,15 +13,14 @@ return new class extends Migration
     {
         Schema::create('answers', function (Blueprint $table) {
             $table->id();
-
+            $table->unsignedSmallInteger('solution')->nullable();
+            $table->boolean('no_solution')->default(false);
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('question_id')->constrained()->cascadeOnDelete();
-
             $table->enum('format', ['text', 'video', 'image']);
             $table->longText('content_text')->nullable();
             $table->string('video_url')->nullable();
             $table->string('image_path')->nullable();
-
             $table->timestamps();
         });
     }

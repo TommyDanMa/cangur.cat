@@ -32,7 +32,6 @@ export default function Typeahead({
   widthClass = 'w-64',
 }) {
   // useState: like variables that remember their values between re-renders.
-  // In Python terms, imagine a local variable that persists across function calls (React renders).
   const [open, setOpen] = useState(false);         // Is the dropdown menu open?
   const [query, setQuery] = useState(initial);     // Text inside the input (what the user typed)
   const [selected, setSelected] = useState(
@@ -43,8 +42,6 @@ export default function Typeahead({
   const [loaded, setLoaded] = useState(false);     // Prevent double initial loads
 
   // useRef: a mutable object that survives re-renders without causing re-render on change.
-  // In Python, think of this like a tiny container with a .current value that you can mutate,
-  // similar to a module-level variable used inside a function, but scoped to this component instance.
   const reqSeq = useRef(0);            // Sequence number to keep only the latest request's results
   const lastQuery = useRef(null);      // Last query sent: avoids repeating the same request
   const wrapRef = useRef(null);        // Ref to the outer wrapper; used to detect outside clicks
@@ -80,8 +77,6 @@ export default function Typeahead({
 
   // useEffect: run code after rendering.
   // Here we register a document click handler to close the menu on outside clicks.
-  // In Flask terms, think of this like setting up and tearing down a little client-side hook
-  // around the component's lifecycle (mount/unmount).
   useEffect(() => {
     const onDocClick = (e) => {
       if (!wrapRef.current) return;

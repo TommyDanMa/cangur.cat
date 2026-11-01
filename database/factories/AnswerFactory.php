@@ -24,7 +24,7 @@ class AnswerFactory extends Factory
             'content_text' => $format === 'text' ? $this->faker->sentence() : null,
             'video_url' => $format === 'video' ? $this->faker->url() : null,
             'image_path' => $format === 'image' ? 'answers/'.$this->faker->uuid.'.jpg' : null,
-            'solution' => $this->faker->optional()->numberBetween(1, 9999),
+            'solution' => $this->faker->numberBetween(1, 9999),
             'no_solution' => false,
         ];
     }

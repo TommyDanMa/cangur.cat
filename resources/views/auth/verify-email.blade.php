@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-layouts.guest>
     <div class="mb-4 text-sm text-gray-600">
         {{ __('Gràcies per registrar-te! Abans de començar, podries verificar la teva adreça electrònica fent clic a l\'enllaç que t\'acabem d\'enviar? Si no has rebut el correu electrònic, te n\'enviarem un altre amb molt de gust.') }}
     </div>
@@ -14,9 +14,9 @@
             @csrf
 
             <div>
-                <x-primary-button>
+                <x-button>
                     {{ __('Torna a enviar el correu de verificació') }}
-                </x-primary-button>
+                </x-button>
             </div>
         </form>
 
@@ -28,4 +28,4 @@
             </button>
         </form>
     </div>
-</x-guest-layout>
+</x-layouts.guest>

@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Gate;
+use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,25 +22,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::define('teacher', function (User $user) {
+            return $user->role === 'teacher';
+        });
+
         Validator::extend('allowed_email', function ($attribute, $value) {
             $value = strtolower(trim($value));
-
-            $whitelistEmails = array_map('strtolower', (array) config('allowed_emails.whitelist_emails', []));
-            if (in_array($value, $whitelistEmails, true)) {
-                return true;
-            }
 
             $domain = substr(strchr($value, '@') ?: '', 1);
             if ($domain === '') {
                 return false;
             }
 
-            $alloedDomains = array_filter([
-                strtolower((string) config('allowed_emails.org_domain')),
-                ...array_map('strtolower', (array) config('allowed_emails.extra_domains', [])),
-            ]);
+            $allowedDomains = array_map('strtolower', (array) config('allowed_emails.allowed_domains', []));
 
-            return in_array($domain, $alloedDomains, true);
+            return in_array($domain, $allowedDomains, true);
         }, __('Aquest correu no està permès per al registre.'));
     }
 }
